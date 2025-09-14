@@ -2,36 +2,32 @@
 require 'inc/db.php';
 require 'inc/header.php';
 
-// Fetch products with their category name
-$sql = "
-    SELECT p.id, p.name, p.price, p.image, c.name AS category
-    FROM products p
-    LEFT JOIN categories c ON p.category_id = c.id
-    ORDER BY p.created_at DESC
-";
-
+// Fetch products
 $res = $mysqli->query("SELECT p.*, c.name as category FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC");
-if(!$res){
-    die("Query failed: " . $mysqli->error);
-}
-$products = $res->fetch_all(MYSQLI_ASSOC);
 
+if (!$res) {
+    die("Query Failed: " . $mysqli->error);
+}
+
+$products = $res->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<h2>Products</h2>
-<div class="product-list">
-    <?php if (!empty($products)): ?>
-        <?php foreach ($products as $p): ?>
-            <div class="product">
-                <img src="assets/<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
-                <h3><?= htmlspecialchars($p['name']) ?></h3>
-                <p>$<?= number_format($p['price'], 2) ?></p>
-                <p><small><?= htmlspecialchars($p['category']) ?></small></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No products found.</p>
-    <?php endif; ?>
+<h1>Products</h1>
+
+<?php if (!empty($products)): ?>
+<div class="product-grid">
+<?php foreach($products as $p): ?>
+  <div class="card">
+    <a href="product.php?id=<?php echo $p['id']; ?>">
+      <img src="<?php echo htmlspecialchars($p['image']); ?>" alt="<?php echo htmlspecialchars($p['title']); ?>">
+    </a>
+    <h3><?php echo htmlspecialchars($p['title']); ?></h3>
+    <div>$<?php echo number_format($p['price'],2); ?></div>
+  </div>
+<?php endforeach; ?>
 </div>
+<?php else: ?>
+<p>No products found. Check your database.</p>
+<?php endif; ?>
 
 <?php require 'inc/footer.php'; ?>
