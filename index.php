@@ -31,3 +31,30 @@ $products = $res->fetch_all(MYSQLI_ASSOC);
 <?php endif; ?>
 
 <?php require 'inc/footer.php'; ?>
+
+<?php
+// Assume $product['id'] is the current product being viewed
+$product_id = $product['id'];
+
+// Call Python script
+$cmd = "python recommend.py " . escapeshellarg($product_id);
+$output = shell_exec($cmd);
+
+// Decode JSON
+$recommendations = json_decode($output, true);
+?>
+
+<h3>You may also like:</h3>
+<div class="recommendations">
+  <?php if($recommendations): ?>
+    <?php foreach($recommendations as $rec): ?>
+      <div class="item">
+        <img src="<?php echo $rec['image']; ?>" width="120">
+        <p><?php echo $rec['title']; ?></p>
+        <p>$<?php echo $rec['price']; ?></p>
+      </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <p>No recommendations found.</p>
+  <?php endif; ?>
+</div>
