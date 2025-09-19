@@ -1,11 +1,12 @@
 import sys
 import mysql.connector
 import json
+from decimal import Decimal
 
 # Get product_id from PHP argument
 product_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
-# Connect to MySQL (adjust to match db.php)
+# Connect to MySQL (adjust if needed)
 conn = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -14,7 +15,7 @@ conn = mysql.connector.connect(
 )
 cursor = conn.cursor(dictionary=True)
 
-# Simple recommendation: fetch 2 products from same category
+# Fetch category of current product
 cursor.execute("""
     SELECT c.id as category_id 
     FROM products p
@@ -35,6 +36,10 @@ if row:
 
 conn.close()
 
-# Print as JSON (PHP will decode this)
-print(json.dumps(recommendations))
+# Convert Decimal → float
+def convert(o):
+    if isinstance(o, Decimal):
+        return float(o)
+    raise TypeError
 
+print(json.dumps(recommendations, default=convert))
