@@ -10,6 +10,9 @@ if (!$res) {
 }
 
 $products = $res->fetch_all(MYSQLI_ASSOC);
+echo "<pre>";
+print_r($products);
+echo "</pre>";
 ?>
 
 <h1>Products</h1>
