@@ -41,5 +41,15 @@ def convert(o):
     if isinstance(o, Decimal):
         return float(o)
     raise TypeError
+import json
+from decimal import Decimal
 
-print(json.dumps(recommendations, default=convert))
+# Custom encoder to handle Decimal
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)  # or str(obj) if you prefer string
+        return super(DecimalEncoder, self).default(obj)
+
+# Use the encoder when dumping
+print(json.dumps(recommendations, cls=DecimalEncoder, indent=2))
